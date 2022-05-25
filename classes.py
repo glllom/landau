@@ -1,4 +1,6 @@
 import os
+from file_operations import convert, create_folder
+
 JOB = r"C:\Program Files\SCM Group\Xilog Plus\Job\\"
 DOCJOB = r"C:\Users\glebo\OneDrive\Documents\landau\job\\"
 
@@ -34,33 +36,30 @@ class Engraving(Program):
 
 
 class Door(Program):
-    def __init__(self, hinges, locks, engraving):
+    def __init__(self, hinges, locks, engraving, root):
         super().__init__()
         self.hinges = hinges
         self.locks = locks
         self.engraving = engraving
+        self.root = root
 
-    def create_folders(self):
+    def create_files(self):
         os.chdir(DOCJOB)
+        create_folder(self.root)
         for engr in self.engraving:
             if engr.group:
-                if not os.path.exists(engr.group):
-                    os.mkdir(engr.group)
-                os.chdir(engr.group)
-            if not os.path.exists(engr.name):
-                os.mkdir(engr.name)
-            os.chdir(engr.name)
+                create_folder(engr.group)
+            create_folder(engr.name)
             for lock in self.locks:
-                if not os.path.exists(lock.name):
-                    os.mkdir(lock.name)
-                os.chdir(lock.name)
+                create_folder(lock.name)
                 for hinge in self.hinges:
-                    if not os.path.exists(hinge.name):
-                        os.mkdir(hinge.name)
-                    os.chdir(hinge.name)
-                    with open(f"{engr.name}_{lock.name}_{hinge.name}.xxl", "w") as f:
+                    create_folder(hinge.name)
+                    filename = f"{engr.name}_{lock.name}_{hinge.name}.xxl"
+                    with open(filename, "w") as f:
                         self.gcode = self.header
                         f.write(self.gcode)
+                    convert(filename)
                     os.chdir("..")
                 os.chdir("..")
             os.chdir(DOCJOB)
+            os.chdir(self.root)
