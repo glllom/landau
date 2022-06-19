@@ -21,9 +21,9 @@ def get_files_dirs(path):
     dirfiles = os.scandir(path)
     for element in dirfiles:
         if os.path.isfile(element):
-            engrav_list.append(str(element.name))
+            engrav_list.append(str(element.name).split('.')[0])
         else:
             if element.name != "corners":
-                engrav_list.extend(list(map(lambda file: (file, element.name), get_files_dirs(f"{path}{element.name}"))))
+                engrav_list.extend(list(map(lambda file: (file, element.name.split('.')[0]), get_files_dirs(f"{path}{element.name.split('.')[0]}"))))
     return engrav_list
 
